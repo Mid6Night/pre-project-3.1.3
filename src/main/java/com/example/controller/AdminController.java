@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.entity.Role;
 import com.example.entity.User;
+import com.example.repos.RoleRepo;
 import com.example.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +26,9 @@ public class AdminController {
 
     @Autowired
     private UserRepo userService;
+
+    @Autowired
+    private RoleRepo roleRepo;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String userList(ModelMap model) {
@@ -44,7 +49,8 @@ public class AdminController {
                           @RequestParam String email) {
         User user = new User(firstName, lastName, email);
         user.setPassword(password);
-        user.setRoles(Collections.singleton(Role.USER));
+        user.setRoles(new HashSet<>());
+        user.getRoles().add(roleRepo.getByName("USER"));
         userService.save(user);
         return "redirect:/admin";
     }
@@ -65,7 +71,7 @@ public class AdminController {
         model.addAttribute("password", user.getPassword());
         model.addAttribute("id", user.getId());
         for (Role role : user.getRoles()) {
-            if (role.equals(Role.ADMIN)) {
+            if (role.equals(roleRepo.getByName("ADMIN"))) {
                 model.addAttribute("admin", true);
             }
         }
@@ -85,10 +91,10 @@ public class AdminController {
         user.setLastName(lastName);
         user.setEmail(email);
         user.setPassword(password);
-        if (admin && !user.getRoles().contains(Role.ADMIN)) {
-            user.getRoles().add(Role.ADMIN);
-        } else if (!admin && user.getRoles().contains(Role.ADMIN)) {
-            user.getRoles().remove(Role.ADMIN);
+        if (admin && !user.getRoles().contains(roleRepo.getByName("ADMIN"))) {
+            user.getRoles().add(roleRepo.getByName("ADMIN"));
+        } else if (!admin && user.getRoles().contains(roleRepo.getByName("ADMIN"))) {
+            user.getRoles().remove(roleRepo.getByName("ADMIN"));
         }
         userService.save(user);
         return "redirect:/admin";
