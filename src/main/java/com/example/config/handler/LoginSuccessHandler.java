@@ -2,6 +2,8 @@ package com.example.config.handler;
 
 import com.example.entity.Role;
 import com.example.entity.User;
+import com.example.repos.RoleRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,9 @@ import java.io.IOException;
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
+    @Autowired
+    private RoleRepo roleRepo;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
                                         HttpServletResponse httpServletResponse,
@@ -20,7 +25,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         User user = (User) authentication.getPrincipal();
 
         for (Role role : user.getRoles()) {
-            if (role.equals(Role.ADMIN)) {
+            if (role.equals(roleRepo.getByName("ADMIN"))) {
                 httpServletResponse.sendRedirect("/admin");
                 return;
             }
