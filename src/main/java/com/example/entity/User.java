@@ -28,9 +28,14 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "roles", nullable = true, insertable = true, updatable = true)
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "t_role_users",
+            joinColumns = @JoinColumn(
+                    name = "users_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "roles_id", referencedColumnName = "id")
+    )
     private Set<Role> roles;
 
     public User() {
