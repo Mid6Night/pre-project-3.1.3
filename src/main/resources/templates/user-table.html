@@ -48,7 +48,7 @@
                     </button>
                 </td>
                 <td>
-                    <a class="btn btn-danger " th:href="@{/admin/{id}/delete(id=${user.getId()})}">Delete</a>
+                    <button id="delete_button" data-toggle="modal" data-target="#staticBackdrop" class="btn btn-danger">Delete</button>
                 </td>
                 <td hidden id="uPassword" th:text="${user.getPassword()}"></td>
             </tr>
@@ -143,6 +143,17 @@
         $("#edit-save").on("click", function () {
             document.getElementById('form-edit').submit();
         });
+    });
+    $("#delete_button").click( function () {
+        document.getElementById('firstName').disabled = 'true';
+        document.getElementById('lastName').disabled = 'true';
+        document.getElementById('email').disabled = 'true';
+        document.getElementById('password').disabled = 'true';
+        document.getElementById('role').disabled = 'true';
+        document.getElementById('edit-save').value = 'Delete';
+        document.getElementById('edit-save').classList.add("btn-danger");
+        document.getElementById('edit-save').classList.remove("btn-info");
+
     });
 </script>
 </body>
