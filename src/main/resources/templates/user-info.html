@@ -2,12 +2,65 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User</title>
+    <title>User page</title>
 </head>
 <body>
-<h1 th:text="${firstName}"/>
-<h1 th:text="${lastName}"/>
-<h1 th:text="${email}"/>
+<header>
+    <nav class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid d-flex row justify-content-between">
+            <a class="navbar-brand d-flex">
+                <strong th:text="${currentUser.getEmail()}"> </strong> <span> &nbsp; with roles: <span
+                    th:each="role:${currentUser.getRoles()}">&nbsp;<span
+                    th:text="${role.getName()}"></span></span></span>
+            </a>
+            <div th:include="logout.html"></div>
+        </div>
+    </nav>
+</header>
+<div class="row">
+    <div class="col-2 p-0">
+        <div th:include="left-nav"/>
+    </div>
+    <div class="col bg-light">
+        <div class="container " style="padding-bottom: 100%">
+            <h1>User information-page</h1>
+            <div class="card">
+                <div class="card-header h4">About User</div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>FirstName</th>
+                            <th>LastName</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <td th:text="${currentUser.getId()}"/>
+                            <td th:text="${firstName}"/>
+                            <td th:text="${lastName}"/>
+                            <td th:text="${email}"/>
+                            <td><span th:each="role:${currentUser.getRoles()}">&nbsp;<span
+                                    th:text="${role.getName()}"></span></span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div th:include="logout.html"/>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
 </body>
 </html>

@@ -5,14 +5,30 @@
     <title>UPDATE</title>
 </head>
 <body>
-<form th:action="@{/admin/{id}/update(id=${id})}" method="post">
-    <input type="text" placeholder="firstName" name="firstName" th:value="${firstName}"/>
-    <input type="text" placeholder="lastName" name="lastName" th:value="${lastName}"/>
-    <input type="text" placeholder="password" name="password" th:value="${password}"/>
-    <input type="text" placeholder="email" name="email" th:value="${email}"/>
-    <input type="checkbox" placeholder="admin" id="admin" name="admin" th:checked="${admin}"/>
-    <label for="admin">admin</label>
-    <button type="submit"> отправить .</button>
-</form>
+<div class="card">
+    <div class="row justify-content-center card-body">
+        <form th:action="@{/admin/{id}/update(id=${id})}" class="form" method="post">
+            <div class="form-group">
+                <h6 align="center">First name</h6>
+                <input type="text" class="form-control"  name="firstName"/>
+                <h6 align="center">Last name</h6>
+                <input type="text" class="form-control"  name="lastName"/>
+                <h6 align="center">Email</h6>
+                <input type="text" class="form-control"  name="email"/>
+                <h6 align="center">Password</h6>
+                <input type="password" class="form-control"  name="password"/>
+                <h6 align="center">Role</h6>
+                <div>
+                    <select class="custom-select" size="2" multiple name="role">
+                        <option>ADMIN</option>
+                        <option>USER</option>
+                    </select>
+                </div>
+            </div>
+            <div class="top-cover center-block mx-auto" align="center">
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

@@ -1,16 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <title>CREATE</title>
 </head>
 <body>
-<form action="/admin/add" method="post">
-    <input type="text" placeholder="firstName" name="firstName"/>
-    <input type="text" placeholder="lastName" name="lastName"/>
-    <input type="text" placeholder="email" name="email"/>
-    <input type="text" placeholder="password" name="password"/>
-    <button type="submit"> отправить .</button>
-</form>
+<div class="card">
+    <div class="card-header h4">Add new user</div>
+    <div class="row justify-content-center card-body">
+        <form action="/admin/add"  class="form" method="post">
+            <div class="form-group">
+                <h6 align="center">First name</h6>
+                <input type="text" class="form-control"  name="firstName"/>
+                <h6 align="center">Last name</h6>
+                <input type="text" class="form-control"  name="lastName"/>
+                <h6 align="center">Email</h6>
+                <input type="text" class="form-control"  name="email"/>
+                <h6 align="center">Password</h6>
+                <input type="password" class="form-control"  name="password"/>
+                <h6 align="center">Role</h6>
+                <div>
+                    <select  class="custom-select" size="2" multiple name="role">
+                        <option th:each="role:${allRoles}" th:value="${role.getId()}" th:text="${role.getName()}"/>
+                    </select>
+                </div>
+            </div>
+            <div class="top-cover center-block mx-auto" align="center">
+                <button type="submit" class="btn btn-success">Add new user</button>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

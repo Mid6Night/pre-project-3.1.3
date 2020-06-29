@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul class="nav nav-pills nav-justified flex-column">
+    <li class="nav-item">
+        <a class="nav-link " id="nav-admin" href="/admin/">Admin</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-user" href="/user/">User</a>
+    </li>
+</ul>
+<script>
+    var text = document.location.pathname;
+    if (/admin/.test(text)) {
+        document.getElementById('nav-admin').classList.add("active")
+    }
+    if (/user/.test(text)) {
+        document.getElementById('nav-user').classList.add("active")
+    }
+</script>
+<script >
+    let message = [[${admin}]]
+
+    if(message){
+        document.getElementById('nav-admin').remove()
+    }
+</script>
+</body>
+</html>

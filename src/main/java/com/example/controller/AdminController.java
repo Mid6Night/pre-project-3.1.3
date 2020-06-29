@@ -6,18 +6,14 @@ import com.example.repos.RoleRepo;
 import com.example.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.Array;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -33,7 +29,20 @@ public class AdminController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String userList(ModelMap model) {
         List<User> users = (List<User>) userService.findAll();
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        model.addAttribute("currentUser", user);
         model.addAttribute("users", users);
+        model.addAttribute("allRoles",roleRepo.findAll());
+        for (Role role : user.getRoles()) {
+            if (role.getName().equals("ADMIN")) {
+                model.addAttribute("admin", false);
+                return "user";
+            }
+        }
+        model.addAttribute("admin", true);
         return "user";
     }
 
@@ -46,11 +55,14 @@ public class AdminController {
     public String addUser(@RequestParam String firstName,
                           @RequestParam String lastName,
                           @RequestParam String password,
+                          @RequestParam String[] role,
                           @RequestParam String email) {
         User user = new User(firstName, lastName, email);
         user.setPassword(password);
         user.setRoles(new HashSet<>());
-        user.getRoles().add(roleRepo.getByName("USER"));
+        for (int i = 0; i< role.length; i++){
+            user.getRoles().add(roleRepo.getById(Long.valueOf(role[i])));
+        }
         userService.save(user);
         return "redirect:/admin";
     }
@@ -61,7 +73,7 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @RequestMapping(path = "/{id}/update", method = RequestMethod.GET)
+    @RequestMapping(path = "/update", method = RequestMethod.GET)
     public String getUpdatePage(@PathVariable(name = "id") Long id, Model model) {
         Optional<User> userOptional = userService.findById(id);
         User user = userOptional.get();
@@ -78,25 +90,31 @@ public class AdminController {
         return "user-update";
     }
 
-    @RequestMapping(value = "/{id}/update", method = RequestMethod.POST)
-    public String update(@PathVariable(name = "id") Long id,
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public String update(@RequestParam(name = "id") Long id,
                          @RequestParam(name = "firstName") String firstName,
                          @RequestParam(name = "lastName") String lastName,
                          @RequestParam(name = "password") String password,
                          @RequestParam(name = "email") String email,
+                         @RequestParam String[] role,
                          @RequestParam(name = "admin", required = false) boolean admin) {
         Optional<User> userOptional = userService.findById(id);
         User user = userOptional.get();
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
-        user.setPassword(password);
-        if (admin && !user.getRoles().contains(roleRepo.getByName("ADMIN"))) {
-            user.getRoles().add(roleRepo.getByName("ADMIN"));
-        } else if (!admin && user.getRoles().contains(roleRepo.getByName("ADMIN"))) {
-            user.getRoles().remove(roleRepo.getByName("ADMIN"));
+        user.setRoles(new HashSet<>());
+        for (int i = 0; i< role.length; i++){
+            user.getRoles().add(roleRepo.getById(Long.valueOf(role[i])));
         }
+        user.setPassword(password);
         userService.save(user);
         return "redirect:/admin";
+    }
+
+    @RequestMapping(value = "findOne/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public Optional<User> findOne (@PathVariable(name = "id") Long id) {
+        return userService.findById(id);
     }
 }

@@ -15,9 +15,6 @@ import java.io.IOException;
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Autowired
-    private RoleRepo roleRepo;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
                                         HttpServletResponse httpServletResponse,
@@ -25,7 +22,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         User user = (User) authentication.getPrincipal();
 
         for (Role role : user.getRoles()) {
-            if (role.equals(roleRepo.getByName("ADMIN"))) {
+            if (role.getName().equals("ADMIN")) {
                 httpServletResponse.sendRedirect("/admin");
                 return;
             }
