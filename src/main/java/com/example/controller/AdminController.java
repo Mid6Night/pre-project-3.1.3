@@ -5,19 +5,20 @@ import com.example.entity.User;
 import com.example.repos.RoleRepo;
 import com.example.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
 
     @Autowired
@@ -35,7 +36,8 @@ public class AdminController {
                 .getPrincipal();
         model.addAttribute("currentUser", user);
         model.addAttribute("users", users);
-        model.addAttribute("allRoles",roleRepo.findAll());
+        model.addAttribute("allRoles", roleRepo.findAll());
+        model.addAttribute("userModel", new User());
         for (Role role : user.getRoles()) {
             if (role.getName().equals("ADMIN")) {
                 model.addAttribute("admin", false);
@@ -46,34 +48,30 @@ public class AdminController {
         return "user";
     }
 
-    @RequestMapping(path = "/add", method = RequestMethod.GET)
+    @GetMapping(path = "/add")
     public String getCreatePage() {
         return "user-create";
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public String addUser(@RequestParam String firstName,
-                          @RequestParam String lastName,
-                          @RequestParam String password,
-                          @RequestParam String[] role,
-                          @RequestParam String email) {
-        User user = new User(firstName, lastName, email);
-        user.setPassword(password);
+    @PostMapping(value = "/add")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String addUser(@ModelAttribute("userModel") User user,
+                          @RequestParam String[] role) {
         user.setRoles(new HashSet<>());
-        for (int i = 0; i< role.length; i++){
+        for (int i = 0; i < role.length; i++) {
             user.getRoles().add(roleRepo.getById(Long.valueOf(role[i])));
         }
         userService.save(user);
         return "redirect:/admin";
     }
 
-    @RequestMapping(value = "/{id}/delete")
-    public String deleteUser(@PathVariable(name = "id") Long id) {
-        userService.deleteById(id);
+    @PostMapping(value = "/delete")
+    public String deleteUser(@ModelAttribute("userModel") User user) {
+        userService.deleteById(user.getId());
         return "redirect:/admin";
     }
 
-    @RequestMapping(path = "/update", method = RequestMethod.GET)
+    @GetMapping(path = "/update")
     public String getUpdatePage(@PathVariable(name = "id") Long id, Model model) {
         Optional<User> userOptional = userService.findById(id);
         User user = userOptional.get();
@@ -90,31 +88,21 @@ public class AdminController {
         return "user-update";
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(@RequestParam(name = "id") Long id,
-                         @RequestParam(name = "firstName") String firstName,
-                         @RequestParam(name = "lastName") String lastName,
-                         @RequestParam(name = "password") String password,
-                         @RequestParam(name = "email") String email,
-                         @RequestParam String[] role,
-                         @RequestParam(name = "admin", required = false) boolean admin) {
-        Optional<User> userOptional = userService.findById(id);
-        User user = userOptional.get();
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
+
+    @PostMapping(value = "/update")
+    public String update(@ModelAttribute("userModel") User user,
+                         @RequestParam String[] role) {
         user.setRoles(new HashSet<>());
-        for (int i = 0; i< role.length; i++){
+        for (int i = 0; i < role.length; i++) {
             user.getRoles().add(roleRepo.getById(Long.valueOf(role[i])));
         }
-        user.setPassword(password);
         userService.save(user);
         return "redirect:/admin";
     }
 
-    @RequestMapping(value = "findOne/{id}", method = RequestMethod.POST)
+    @PostMapping(value = "findOne/{id}")
     @ResponseBody
-    public Optional<User> findOne (@PathVariable(name = "id") Long id) {
+    public Optional<User> findOne(@PathVariable(name = "id") Long id) {
         return userService.findById(id);
     }
 }

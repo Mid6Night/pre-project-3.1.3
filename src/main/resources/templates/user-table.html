@@ -1,22 +1,20 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-            crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
             integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.5.1.js"
+            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
             crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             crossorigin="anonymous"></script>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
     <title>Admin panel</title>
 <body>
@@ -43,12 +41,14 @@
                 <td id="uRole"><span th:each="role:${user.getRoles()}">&nbsp;<span
                         th:text="${role.getName()}"></span></span></td>
                 <td>
-                    <button type="button" data-toggle="modal" data-target="#staticBackdrop" class="btn btn-info editBtn"
-                            th:href="@{/admin/findOne/(id=${user.getId()})}">Edit
+                    <button type="button" data-toggle="modal" data-target="#staticBackdrop"
+                            class="btn btn-info editBtn">Edit
                     </button>
                 </td>
                 <td>
-                    <button id="delete_button" data-toggle="modal" data-target="#staticBackdrop" class="btn btn-danger">Delete</button>
+                    <button id="delete_button" onclick="theFunction()" data-toggle="modal" data-target="#staticBackdrop" class="btn btn-danger">
+                        Delete
+                    </button>
                 </td>
                 <td hidden id="uPassword" th:text="${user.getPassword()}"></td>
             </tr>
@@ -69,20 +69,26 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="row justify-content-center card-body">
-                        <form id="form-edit" th:action="@{/admin/update}" class="form" method="post">
+                        <form id="form-edit" th:action="@{/admin/update}" th:object="${userModel}" class="form"
+                              method="post">
                             <div class="form-group">
-                                <input type="hidden" class="form-control" id="id" name="id"/>
+                                <input type="hidden" class="form-control" th:value="${userModel.id}" th:field="*{id}"
+                                       id="eId" name="id"/>
                                 <h6 align="center">First name</h6>
-                                <input type="text" class="form-control" id="firstName" name="firstName"/>
+                                <input type="text" class="form-control" th:value="${userModel.firstName}"
+                                       th:field="*{firstName}" id="eFirstName" name="firstName"/>
                                 <h6 align="center">Last name</h6>
-                                <input type="text" class="form-control" id="lastName" name="lastName"/>
+                                <input type="text" class="form-control" id="eLastName" th:value="${userModel.lastName}"
+                                       th:field="*{lastName}" name="eLastName"/>
                                 <h6 align="center">Email</h6>
-                                <input type="text" class="form-control" id="email" name="email"/>
+                                <input type="text" class="form-control" th:value="${userModel.email}"
+                                       th:field="*{email}" id="eEmail" name="email"/>
                                 <h6 align="center">Password</h6>
-                                <input type="password" class="form-control" id="password" name="password"/>
+                                <input type="password" class="form-control" th:value="${userModel.password}"
+                                       th:field="*{password}" id="ePassword" name="password"/>
                                 <h6 align="center">Role</h6>
                                 <div>
-                                    <select class="custom-select" size="2" id="role" multiple name="role">
+                                    <select class="custom-select" size="2" id="eRole" multiple name="role">
                                         <option th:each="role:${allRoles}" th:id="role_id" th:value="${role.getId()}"
                                                 th:text="${role.getName()}"/>
                                     </select>
@@ -108,30 +114,30 @@
             console.log(itm);
             switch (itm.id) {
                 case 'uId':
-                    $('#id').val(itm.textContent);
+                    $('#eId').val(itm.textContent);
                     break;
                 case 'uFirstName':
-                    $('#firstName').val(itm.textContent);
+                    $('#eFirstName').val(itm.textContent);
                     break;
                 case 'uLastName':
-                    $('#lastName').val(itm.textContent);
+                    $('#eLastName').val(itm.textContent);
                     break;
                 case 'uEmail':
-                    $('#email').val(itm.textContent);
+                    $('#eEmail').val(itm.textContent);
                     break;
                 case 'uPassword':
-                    $('#password').val(itm.textContent);
+                    $('#ePassword').val(itm.textContent);
                     break;
                 case 'uRole':
                     var select = itm.innerText;
                     var value;
-                    if (/USER/.test(select)){
+                    if (/USER/.test(select)) {
                         value = 1;
-                        document.getElementById('role').options[value].selected = true;
+                        document.getElementById('eRole').options[value].selected = true;
                     }
-                    if (/ADMIN/.test(select)){
+                    if (/ADMIN/.test(select)) {
                         value = 0;
-                        document.getElementById('role').options[value].selected = true;
+                        document.getElementById('eRole').options[value].selected = true;
                     }
                     break;
                 default:
@@ -144,17 +150,20 @@
             document.getElementById('form-edit').submit();
         });
     });
-    $("#delete_button").click( function () {
-        document.getElementById('firstName').disabled = 'true';
-        document.getElementById('lastName').disabled = 'true';
-        document.getElementById('email').disabled = 'true';
-        document.getElementById('password').disabled = 'true';
-        document.getElementById('role').disabled = 'true';
+
+    function theFunction(){
+        document.getElementById('eFirstName').disabled = 'true';
+        document.getElementById('eLastName').disabled = 'true';
+        document.getElementById('eEmail').disabled = 'true';
+        document.getElementById('ePassword').disabled = 'true';
+        document.getElementById('eRole').disabled = 'true';
         document.getElementById('edit-save').value = 'Delete';
+        document.getElementById('edit-save').value = 'Delete';
+        document.getElementById('form-edit').action = '/admin/delete';
         document.getElementById('edit-save').classList.add("btn-danger");
         document.getElementById('edit-save').classList.remove("btn-info");
-
-    });
+    };
 </script>
+<!--<script src="webjars/jquery/3.5.1/jquery.min.js"></script>-->
 </body>
 </html>

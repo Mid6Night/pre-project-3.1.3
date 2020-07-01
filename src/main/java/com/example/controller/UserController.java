@@ -17,7 +17,7 @@ import java.util.Set;
 
 @Controller
 @RequestMapping("/user")
-@PreAuthorize("hasAuthority('USER')")
+
 public class UserController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)

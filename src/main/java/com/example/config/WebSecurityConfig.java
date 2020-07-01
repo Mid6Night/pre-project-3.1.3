@@ -15,7 +15,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
@@ -52,6 +51,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //страницы аутентификаци доступна всем
                 .antMatchers("/login").anonymous()
                 // защищенные URL
+                .antMatchers("/login").anonymous()
+                .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                .antMatchers("/user/**").hasAnyAuthority("USER","ADMIN")
                 .antMatchers("/user-info")
                 .access("hasAnyRole('ADMIN')")
                 .anyRequest()

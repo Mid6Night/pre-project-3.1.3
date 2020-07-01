@@ -5,6 +5,8 @@ import com.example.entity.User;
 import com.example.repos.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import javax.servlet.ServletException;
@@ -21,13 +23,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
 
+        RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
         for (Role role : user.getRoles()) {
             if (role.getName().equals("ADMIN")) {
-                httpServletResponse.sendRedirect("/admin");
+                redirectStrategy.sendRedirect(httpServletRequest,httpServletResponse,"/admin");
                 return;
             }
         }
-        httpServletResponse.sendRedirect("/user");
+        redirectStrategy.sendRedirect(httpServletRequest,httpServletResponse,"/user");
 
     }
 }
