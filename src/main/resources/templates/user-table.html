@@ -33,25 +33,9 @@
                 <th>Delete</th>
             </tr>
             </thead>
-            <tr th:each="user:${users}">
-                <td id="uId" th:text="${user.getId()}"/>
-                <td id="uFirstName" th:text="${user.getFirstName()}"/>
-                <td id="uLastName" th:text="${user.getLastName()}"/>
-                <td id="uEmail" th:text="${user.getEmail()}"/>
-                <td id="uRole"><span th:each="role:${user.getRoles()}">&nbsp;<span
-                        th:text="${role.getName()}"></span></span></td>
-                <td>
-                    <button type="button" data-toggle="modal" data-target="#staticBackdrop"
-                            class="btn btn-info editBtn">Edit
-                    </button>
-                </td>
-                <td>
-                    <button id="delete_button" onclick="theFunction()" data-toggle="modal" data-target="#staticBackdrop" class="btn btn-danger">
-                        Delete
-                    </button>
-                </td>
-                <td hidden id="uPassword" th:text="${user.getPassword()}"></td>
-            </tr>
+            <tbody id="tbodyid">
+
+            </tbody>
         </table>
     </div>
 </div>
@@ -103,33 +87,37 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <input type="submit" id="edit-save" value="Edit" class="btn btn-primary">
+                <input type="submit" id="edit-save" value="Edit" data-dismiss="modal" class="btn btn-primary">
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    $("button").on("click", function (event, elem) {
-        $(this).closest("tr").find("td").each(function (idx, itm) {
-            console.log(itm);
-            switch (itm.id) {
-                case 'uId':
-                    $('#eId').val(itm.textContent);
-                    break;
-                case 'uFirstName':
-                    $('#eFirstName').val(itm.textContent);
-                    break;
-                case 'uLastName':
-                    $('#eLastName').val(itm.textContent);
-                    break;
-                case 'uEmail':
-                    $('#eEmail').val(itm.textContent);
-                    break;
-                case 'uPassword':
-                    $('#ePassword').val(itm.textContent);
-                    break;
-                case 'uRole':
-                    var select = itm.innerText;
+    function editModal(button) {
+        document.getElementById('eFirstName').disabled = null;
+        document.getElementById('eLastName').disabled = null;
+        document.getElementById('eEmail').disabled = null;
+        document.getElementById('ePassword').disabled = null;
+        document.getElementById('eRole').disabled = null;
+        document.getElementById('edit-save').value = "Edit";
+        document.getElementById('form-edit').action = 'http://localhost:8080/admin/update';
+        document.getElementById('edit-save').classList.add("btn-info");
+        document.getElementById('edit-save').classList.remove("btn-danger");
+        $.ajax({
+                url: 'http://localhost:8080/admin/findOne',
+                type: 'POST',
+                data: {"id": button.value},
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    $('#eId').val(data.id);
+                    $('#eFirstName').val(data.firstName);
+                    $('#eLastName').val(data.lastName);
+                    $('#eEmail').val(data.email);
+                    $('#ePassword').val(data.password);
+                    var select = data.roles.map(function(item) {
+                        return item['name'];
+                    });
                     var value;
                     if (/USER/.test(select)) {
                         value = 1;
@@ -139,30 +127,72 @@
                         value = 0;
                         document.getElementById('eRole').options[value].selected = true;
                     }
-                    break;
-                default:
-                    break;
+                }
             }
-        });
-    });
+        );
+    }
     $(function () {
         $("#edit-save").on("click", function () {
-            document.getElementById('form-edit').submit();
+            var data = $("#form-edit").serialize();
+            console.log(document.getElementById('form-edit').action);
+            $.ajax({
+                method:"POST",
+                data: data,
+                url: document.getElementById('form-edit').action,
+                success:function () {
+                    updateTable();
+                }
+            });
+
         });
     });
 
-    function theFunction(){
+    function theFunction(button) {
+        editModal(button)
         document.getElementById('eFirstName').disabled = 'true';
         document.getElementById('eLastName').disabled = 'true';
         document.getElementById('eEmail').disabled = 'true';
         document.getElementById('ePassword').disabled = 'true';
         document.getElementById('eRole').disabled = 'true';
         document.getElementById('edit-save').value = 'Delete';
-        document.getElementById('edit-save').value = 'Delete';
-        document.getElementById('form-edit').action = '/admin/delete';
+        document.getElementById('form-edit').action = 'http://localhost:8080/admin/delete';
         document.getElementById('edit-save').classList.add("btn-danger");
         document.getElementById('edit-save').classList.remove("btn-info");
     };
+    $(document).ready(function () {
+        updateTable()
+    });
+
+    function updateTable() {
+        $("#tbodyid").empty();
+        $.ajax({
+            url: 'http://localhost:8080/admin/getAll',
+            type: 'POST',
+            data: null,
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function (index, doc) {
+                    var select = doc.roles.map(function(item) {
+                        return item['name'];
+                    });
+                    $('#myTable > tbody:last-child')
+                        .append('<tr>\n' +
+                            '                <td id="uId">' + doc.id + '</td>\n' +
+                            '                <td id="uFirstName">' + doc.firstName + '</td>\n' +
+                            '                <td id="uLastName">' + doc.lastName + '</td>\n' +
+                            '                <td id="uEmail">' + doc.email + '</td>\n' +
+                            '                <td id="uRole">' + select + '</td>\n' +
+                            '                <td><button type="button" onclick="editModal(this)" id="editButton" data-toggle="modal" value="' + doc.id + '" data-target="#staticBackdrop"\n' +
+                            '                            class="btn btn-info editBtn">Edit</button></td>' +
+                            '                <td>' +
+                            '                    <button id="delete_button" onclick="theFunction(this)" data-toggle="modal" value="' + doc.id + '" data-target="#staticBackdrop" class="btn btn-danger">Delete</button>' +
+                            '                </td>' +
+                            '            </tr>');
+
+                })
+            }
+        })
+    }
 </script>
 <!--<script src="webjars/jquery/3.5.1/jquery.min.js"></script>-->
 </body>
