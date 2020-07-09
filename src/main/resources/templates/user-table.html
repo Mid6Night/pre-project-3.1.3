@@ -15,7 +15,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             crossorigin="anonymous"></script>
-
+    <script src='/script.js'></script>
     <title>Admin panel</title>
 <body>
 <div class="card">
@@ -87,113 +87,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <input type="submit" id="edit-save" value="Edit" data-dismiss="modal" class="btn btn-primary">
+                <input type="submit" id="edit-save" onclick="editSave()" value="Edit" data-dismiss="modal" class="btn btn-primary">
             </div>
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    function editModal(button) {
-        document.getElementById('eFirstName').disabled = null;
-        document.getElementById('eLastName').disabled = null;
-        document.getElementById('eEmail').disabled = null;
-        document.getElementById('ePassword').disabled = null;
-        document.getElementById('eRole').disabled = null;
-        document.getElementById('edit-save').value = "Edit";
-        document.getElementById('form-edit').action = 'http://localhost:8080/admin/update';
-        document.getElementById('edit-save').classList.add("btn-info");
-        document.getElementById('edit-save').classList.remove("btn-danger");
-        $.ajax({
-                url: 'http://localhost:8080/admin/findOne',
-                type: 'POST',
-                data: {"id": button.value},
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data)
-                    $('#eId').val(data.id);
-                    $('#eFirstName').val(data.firstName);
-                    $('#eLastName').val(data.lastName);
-                    $('#eEmail').val(data.email);
-                    $('#ePassword').val(data.password);
-                    var select = data.roles.map(function(item) {
-                        return item['name'];
-                    });
-                    var value;
-                    if (/USER/.test(select)) {
-                        value = 1;
-                        document.getElementById('eRole').options[value].selected = true;
-                    }
-                    if (/ADMIN/.test(select)) {
-                        value = 0;
-                        document.getElementById('eRole').options[value].selected = true;
-                    }
-                }
-            }
-        );
-    }
-    $(function () {
-        $("#edit-save").on("click", function () {
-            var data = $("#form-edit").serialize();
-            console.log(document.getElementById('form-edit').action);
-            $.ajax({
-                method:"POST",
-                data: data,
-                url: document.getElementById('form-edit').action,
-                success:function () {
-                    updateTable();
-                }
-            });
-
-        });
-    });
-
-    function theFunction(button) {
-        editModal(button)
-        document.getElementById('eFirstName').disabled = 'true';
-        document.getElementById('eLastName').disabled = 'true';
-        document.getElementById('eEmail').disabled = 'true';
-        document.getElementById('ePassword').disabled = 'true';
-        document.getElementById('eRole').disabled = 'true';
-        document.getElementById('edit-save').value = 'Delete';
-        document.getElementById('form-edit').action = 'http://localhost:8080/admin/delete';
-        document.getElementById('edit-save').classList.add("btn-danger");
-        document.getElementById('edit-save').classList.remove("btn-info");
-    };
-    $(document).ready(function () {
-        updateTable()
-    });
-
-    function updateTable() {
-        $("#tbodyid").empty();
-        $.ajax({
-            url: 'http://localhost:8080/admin/getAll',
-            type: 'POST',
-            data: null,
-            dataType: 'json',
-            success: function (data) {
-                $.each(data, function (index, doc) {
-                    var select = doc.roles.map(function(item) {
-                        return item['name'];
-                    });
-                    $('#myTable > tbody:last-child')
-                        .append('<tr>\n' +
-                            '                <td id="uId">' + doc.id + '</td>\n' +
-                            '                <td id="uFirstName">' + doc.firstName + '</td>\n' +
-                            '                <td id="uLastName">' + doc.lastName + '</td>\n' +
-                            '                <td id="uEmail">' + doc.email + '</td>\n' +
-                            '                <td id="uRole">' + select + '</td>\n' +
-                            '                <td><button type="button" onclick="editModal(this)" id="editButton" data-toggle="modal" value="' + doc.id + '" data-target="#staticBackdrop"\n' +
-                            '                            class="btn btn-info editBtn">Edit</button></td>' +
-                            '                <td>' +
-                            '                    <button id="delete_button" onclick="theFunction(this)" data-toggle="modal" value="' + doc.id + '" data-target="#staticBackdrop" class="btn btn-danger">Delete</button>' +
-                            '                </td>' +
-                            '            </tr>');
-
-                })
-            }
-        })
-    }
-</script>
 <!--<script src="webjars/jquery/3.5.1/jquery.min.js"></script>-->
 </body>
 </html>

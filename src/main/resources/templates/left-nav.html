@@ -21,9 +21,7 @@
     if (/user/.test(text)) {
         document.getElementById('nav-user').classList.add("active")
     }
-</script>
-<script >
-    let message = [[${admin}]]
+    let message = [[${!currentUser.isAdmin()}]]
 
     if(message){
         document.getElementById('nav-admin').remove()

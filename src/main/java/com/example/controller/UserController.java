@@ -26,17 +26,7 @@ public class UserController {
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
-        model.addAttribute("email",user.getEmail());
-        model.addAttribute("firstName",user.getFirstName());
-        model.addAttribute("lastName",user.getLastName());
         model.addAttribute("currentUser",user);
-        for (Role role : user.getRoles()) {
-            if (role.getName().equals("ADMIN")) {
-                model.addAttribute("admin", false);
-                return "user-info";
-            }
-        }
-        model.addAttribute("admin", true);
         return "user-info";
     }
 }

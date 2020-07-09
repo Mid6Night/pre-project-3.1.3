@@ -39,9 +39,9 @@
                         </thead>
                         <tr>
                             <td th:text="${currentUser.getId()}"/>
-                            <td th:text="${firstName}"/>
-                            <td th:text="${lastName}"/>
-                            <td th:text="${email}"/>
+                            <td th:text="${currentUser.firstName}"/>
+                            <td th:text="${currentUser.lastName}"/>
+                            <td th:text="${currentUser.email}"/>
                             <td><span th:each="role:${currentUser.getRoles()}">&nbsp;<span
                                     th:text="${role.getName()}"></span></span></td>
                         </tr>

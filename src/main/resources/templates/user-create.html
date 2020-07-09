@@ -49,18 +49,5 @@
         </form>
     </div>
 </div>
-<script>
-    function subButton() {
-        var data = $("#myForm").serialize();
-        $.ajax({
-            type: "POST",
-            data: data,
-            url: "http://localhost:8080/admin/add",
-            success: function () {
-                updateTable()
-            }
-        });
-    }
-</script>
 </body>
 </html>

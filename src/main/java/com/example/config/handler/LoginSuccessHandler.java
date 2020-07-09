@@ -2,8 +2,6 @@ package com.example.config.handler;
 
 import com.example.entity.Role;
 import com.example.entity.User;
-import com.example.repos.RoleRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;

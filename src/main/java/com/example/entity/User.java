@@ -125,4 +125,13 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public boolean isAdmin(){
+        for (Role role : this.getRoles()) {
+            if (role.getName().equals("ADMIN")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

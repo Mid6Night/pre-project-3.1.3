@@ -1,12 +1,12 @@
-package com.example.repos;
+package com.example.repository;
 
 import com.example.entity.Role;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface RoleRepo extends CrudRepository<Role, Long> {
     Role getByName(String name);
     Role getById(Long id);
+    Role[] getAll();
 }
