@@ -20,12 +20,11 @@ public class UserServiceIml implements UserDetailsService, UserService {
 
     private RoleRepo roleRepo;
 
-    private Role[] allRoles;
 
     public UserServiceIml(UserRepo userRepo, RoleRepo roleRepo) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
-        allRoles = roleRepo.getAll();
+
     }
 
 
