@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface RoleRepo extends CrudRepository<Role, Long> {
     Role getByName(String name);
     Role getById(Long id);
-    Role[] getAll();
 }

@@ -24,7 +24,6 @@ public class UserServiceIml implements UserDetailsService, UserService {
     public UserServiceIml(UserRepo userRepo, RoleRepo roleRepo) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
-
     }
 
 
